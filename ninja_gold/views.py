@@ -6,12 +6,6 @@ def index(request):
     request.session['mensajes']=[]
     request.session['gold']=0
     return render(request,'ninja.html')
-    
-    context = {
-        'saludo': 'Hola'
-    }
-    return render(request, 'index.html', context)
-
 
 def second(request, name):
     return HttpResponse('Hola ' + name)
