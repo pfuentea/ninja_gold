@@ -1,0 +1,143 @@
+{% extends './base.html' %}
+{% block content %}
+<style>
+
+
+</style>
+<h1>Ninja Gold</h1>
+<h3>Oro total:{{request.session.gold}}</h3>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Configurar
+</button>
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#ConfirmResetModal">Reset</button>
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div class="card" style="width: 13rem;">
+                <div class="card-body">
+                    <h5 class="card-title">FARM</h5>
+                    <p class="card-text">(earn 10-20 golds) </p>
+                    <a href="#" class="btn btn-primary btn-accion" id="farm">Find Gold</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 13rem;">
+                <div class="card-body">
+                    <h5 class="card-title">CAVE</h5>
+                    <p class="card-text">(earn 5-10 golds) </p>
+                    <a href="#" class="btn btn-primary btn-accion"  id="cave">Find Gold</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 13rem;">
+                <div class="card-body">
+                    <h5 class="card-title">HOUSE</h5>
+                    <p class="card-text">(earn 2-5 golds) </p>
+                    <a href="#" class="btn btn-primary btn-accion" id="house">Find Gold</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card" style="width: 13rem;">
+                <div class="card-body">
+                    <h5 class="card-title">CASINO</h5>
+                    <p class="card-text">(earn/taken 0-50 golds) </p>
+                    <a href="#" class="btn btn-primary btn-accion" id="casino">Find Gold</a>
+                </div>
+            </div>         
+        </div>
+    </div>
+
+    <form action="process_money" method="post" name="form_gold" id="form_gold">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="" id="accion">
+    </form>
+
+    <div class="row">
+        <div class="col-11">
+            <div class="card overflow-auto" style="width: 26rem; height :13rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Actividad</h5>
+                    <p class="card-text" >
+                        <ul>
+                            {% for msg in request.session.mensajes %}  
+                            <li>
+                            <span class="text-{{msg.style}}">
+                                {{ msg.mensaje }} 
+                            </span>
+                        </li>
+                            {% endfor %}
+                        </ul>  
+                    </p>                       
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Configuración</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div id="ConfirmResetModal" class="modal fade">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header">									
+				<h5 class="modal-title">Esta seguro que desea resetear ?</h5>	
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Realmente desea reiniciar los registros? Este proceso no se podrá deshacer.</p>
+			</div>
+			<div class="modal-footer justify-content-center">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>   
+
+<script>
+    $('.btn-accion').click(function(){
+      //  alert($(this).attr('id'));
+        let accion=$(this).attr('id');
+        url='/process_money/'+accion+'/'
+        //alert(url)
+        $('#form_gold').attr('action', url);
+        //$('#accion').val(accion);
+        $('#form_gold').submit();
+    });
+
+    $('.btn-reset').click(function(){
+      //  alert($(this).attr('id'));
+        let accion='reset'
+        url='/process_money/'+accion+'/'
+        //alert(url)
+        $('#form_gold').attr('action', url);
+        //$('#accion').val(accion);
+        $('#form_gold').submit();
+    });
+
+    
+
+</script>
+
+{% endblock %}
