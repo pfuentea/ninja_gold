@@ -1,11 +1,20 @@
 {% extends './base.html' %}
 {% block content %}
 <style>
-
-
+img{
+    width:150px;
+}
+body{
+    background: url('https://img.pixers.pics/pho_wat(s3:700/FO/62/14/81/38/700_FO62148138_fccb2d4623540b09584bbef4313141d3.jpg,700,700,cms:2018/10/5bd1b6b8d04b8_220x50-watermark.png,over,480,650,jpg)/stickers-vector-gold-background-with-floral-decoration.jpg.jpg') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+    
+}
 </style>
 <h1>Ninja Gold</h1>
-<h3>Oro total:{{request.session.gold}}</h3>
+<h3>Oro total:{{request.session.gold}} Quedan {{request.session.turnos_restantes}} Turnos y Falta {{request.session.gap}} Gold</h3>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
     Configurar
 </button>
@@ -17,6 +26,7 @@
             <div class="card" style="width: 13rem;">
                 <div class="card-body">
                     <h5 class="card-title">FARM</h5>
+                    <img src="https://static.wikia.nocookie.net/starwars/images/6/6b/Sorganic.jpg/revision/latest/scale-to-width-down/300?cb=20210308163049" alt="">
                     <p class="card-text">(earn 10-20 golds) </p>
                     <a href="#" class="btn btn-primary btn-accion" id="farm">Find Gold</a>
                 </div>
@@ -26,6 +36,7 @@
             <div class="card" style="width: 13rem;">
                 <div class="card-body">
                     <h5 class="card-title">CAVE</h5>
+                    <img src="https://traslaultimafrontera.files.wordpress.com/2019/10/maxresdefault-10.jpg" alt="">
                     <p class="card-text">(earn 5-10 golds) </p>
                     <a href="#" class="btn btn-primary btn-accion"  id="cave">Find Gold</a>
                 </div>
@@ -35,6 +46,7 @@
             <div class="card" style="width: 13rem;">
                 <div class="card-body">
                     <h5 class="card-title">HOUSE</h5>
+                    <img src="https://i.pinimg.com/originals/d9/d8/61/d9d861ca274ce2ca34c58cb8f0d7636b.jpg" alt="">
                     <p class="card-text">(earn 2-5 golds) </p>
                     <a href="#" class="btn btn-primary btn-accion" id="house">Find Gold</a>
                 </div>
@@ -44,6 +56,7 @@
             <div class="card" style="width: 13rem;">
                 <div class="card-body">
                     <h5 class="card-title">CASINO</h5>
+                    <img src="https://cdn-media.planete-starwars.com/news/78469-photo-intro-1-169-lg.jpg?w=768" alt="">
                     <p class="card-text">(earn/taken 0-50 golds) </p>
                     <a href="#" class="btn btn-primary btn-accion" id="casino">Find Gold</a>
                 </div>
@@ -81,26 +94,41 @@
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Configuración</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content">
+            <form action="/configurar/" name="form_conf" id="form_conf" method="POST">
+                {% csrf_token %}
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Configuración</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <div class="modal-body">
+                    Turno máximos?:<select name="turnos">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                    </select>
+                    Meta:<select name="goal">
+                        <option value="20">20</option>
+                        <option value="40">40</option>
+                        <option value="60">60</option>
+                    </select> 
+                    Puntos
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-set">Guardar</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary">Guardar</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
 
 <div id="ConfirmResetModal" class="modal fade">
 	<div class="modal-dialog modal-confirm">
 		<div class="modal-content">
-			<div class="modal-header">									
+            
+			<div class="modal-header">	
+            						
 				<h5 class="modal-title">Esta seguro que desea resetear ?</h5>	
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
@@ -109,32 +137,43 @@
 			</div>
 			<div class="modal-footer justify-content-center">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-danger">Delete</button>
+				<button type="button" class="btn btn-danger btn-reset">Delete</button>
 			</div>
+        	
 		</div>
 	</div>
 </div>   
+<form action="/ninja_reset" method="post" name="reset_gold" id="reset_gold">
+    {% csrf_token %}
+    <input type="hidden" name="accion" value="" id="accion">
+</form>
+
 
 <script>
+    let turno_zero= {{request.session.turno_zero}};
+
     $('.btn-accion').click(function(){
       //  alert($(this).attr('id'));
-        let accion=$(this).attr('id');
-        url='/process_money/'+accion+'/'
-        //alert(url)
-        $('#form_gold').attr('action', url);
-        //$('#accion').val(accion);
-        $('#form_gold').submit();
+        if(turno_zero==1){
+            alert('Favor configure antes de jugar');
+        }
+        else{
+            let accion=$(this).attr('id');
+            url='/process_money/'+accion+'/'
+            //alert(url)
+            $('#form_gold').attr('action', url);
+            //$('#accion').val(accion);
+            $('#form_gold').submit();
+        }        
     });
 
-    $('.btn-reset').click(function(){
-      //  alert($(this).attr('id'));
-        let accion='reset'
-        url='/process_money/'+accion+'/'
-        //alert(url)
-        $('#form_gold').attr('action', url);
-        //$('#accion').val(accion);
-        $('#form_gold').submit();
+    $('.btn-reset').on('click',function(e){
+        $('#reset_gold').submit();
     });
+
+    $('.btn-set').on('click',function(){
+        $('#form_conf').submit();
+    })
 
     
 

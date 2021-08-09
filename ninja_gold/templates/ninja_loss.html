@@ -1,0 +1,8 @@
+{% extends './base.html' %}
+{% block content %}
+<h1>Se le acabaron los turnos, lo sentimos!</h1>
+Logró {{request.session.gold}} Gold de 
+{{request.session.meta}} que necesitaba en 
+{{request.session.turnos_pasados}} turnos.
+<a href="/">Volver a Jugar</a>
+{% endblock %}
